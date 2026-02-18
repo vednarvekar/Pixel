@@ -10,7 +10,9 @@ import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify"; 
 import { Github, Linkedin, Twitter, Mail } from 'lucide-react';
 
-const API_BASE_URL = "http://localhost:3000";
+// const API_BASE_URL = "http://localhost:3000";
+const API_BASE_URL = "https://pixel-1-lwbp.onrender.com";
+
 
 type ScanState = "idle" | "preview" | "scanning" | "results";
 

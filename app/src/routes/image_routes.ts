@@ -6,6 +6,7 @@ import { checkWebScore } from "../service/visualSearch.service.js";
 import { checkMetaData } from "../utils/metadata.extraction.js";
 import { fuseScores } from "../service/score.service.js";
 
+const PYTHON_API = "https://pixel-tlxy.onrender.com";
 
 const router = express.Router();
 const upload = multer({
@@ -52,9 +53,12 @@ router.post("/scan", upload.single("image"), async(req: Request, res:Response) =
             contentType: req.file.mimetype
         });    
 
-        const response = await axios.post("http://127.0.0.1:8000/predict", form, {
+        // const response = await axios.post("http://127.0.0.1:8000/predict", form, {
+        //     headers: {...form.getHeaders()}
+        // });
+        const response = await axios.post(`${PYTHON_API}/predict`, form, {
             headers: {...form.getHeaders()}
-        });
+        })
 
 
         // ------------- 4. Scoring ---------------
