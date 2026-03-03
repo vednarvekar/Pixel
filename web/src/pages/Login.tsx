@@ -16,6 +16,16 @@ export default function Login() {
   const [isSignUp, setIsSignUp] = useState(false);
   const [userName, setUserName] = useState<string | null>(null);
   const navigate = useNavigate();
+  const SUPABASE_HOST = "fewmybonsxgrhiywbyzs.supabase.co";
+
+  const showAuthError = (error: unknown) => {
+    const message = error instanceof Error ? error.message : String(error ?? "Unknown error");
+    if (message.toLowerCase().includes("failed to fetch")) {
+      toast.error(`Cannot reach Supabase (${SUPABASE_HOST}). Check internet, ad-block/shields, and Supabase allowed local URLs.`);
+      return;
+    }
+    toast.error(message);
+  };
 
   useEffect(() => {
     const getUser = async () => {
@@ -30,11 +40,15 @@ export default function Login() {
   }, [navigate]);
 
   const handleGoogleLogin = async () => {
-    const { error } = await supabase.auth.signInWithOAuth({
-      provider: 'google',
-      options: { redirectTo: `${window.location.origin}/dashboard` },
-    });
-    if (error) toast.error(error.message);
+    try {
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: 'google',
+        options: { redirectTo: `${window.location.origin}/dashboard` },
+      });
+      if (error) showAuthError(error);
+    } catch (error) {
+      showAuthError(error);
+    }
   };
 
   const handleAuth = async (e: React.FormEvent) => {
@@ -42,27 +56,35 @@ export default function Login() {
     setLoading(true);
 
     if (isSignUp) {
-      const { error, data } = await supabase.auth.signUp({ 
-        email, 
-        password,
-        options: { data: { full_name: fullName } }
-      });
-      
-      if (error) {
-        toast.error(error.message);
-      } else if (data.user && data.session === null) {
-        // This happens if email confirmation is turned ON in Supabase
-        toast.info("Check your email for a confirmation link!");
-      } else {
-        toast.success("Welcome to Pixel!");
-        navigate("/dashboard");
+      try {
+        const { error, data } = await supabase.auth.signUp({ 
+          email, 
+          password,
+          options: { data: { full_name: fullName } }
+        });
+        
+        if (error) {
+          showAuthError(error);
+        } else if (data.user && data.session === null) {
+          // This happens if email confirmation is turned ON in Supabase
+          toast.info("Check your email for a confirmation link!");
+        } else {
+          toast.success("Welcome to Pixel!");
+          navigate("/dashboard");
+        }
+      } catch (error) {
+        showAuthError(error);
       }
     } else {
-      const { error } = await supabase.auth.signInWithPassword({ email, password });
-      if (error) toast.error(error.message);
-      else {
-        toast.success("Logged in successfully!");
-        navigate("/dashboard");
+      try {
+        const { error } = await supabase.auth.signInWithPassword({ email, password });
+        if (error) showAuthError(error);
+        else {
+          toast.success("Logged in successfully!");
+          navigate("/dashboard");
+        }
+      } catch (error) {
+        showAuthError(error);
       }
     }
     setLoading(false);

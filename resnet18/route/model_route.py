@@ -18,6 +18,10 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+@app.get("/health")
+async def health():
+    return {"status": "ok"}
+
 
 
 # 1. Load the Model
@@ -60,9 +64,6 @@ async def predict(file: UploadFile = File(...)):
         # Assuming index 0 is AI and index 1 is REAL
         ai_score = probabilities[0][0].item() * 100
         real_score = probabilities[0][1].item() * 100
-    print("Model loaded. Class order assumed: [ai, real]")
-    print("DEBUG SCALE TEST:", probabilities[0][0].item() * 100)
-    print("Loading model from:", MODEL_PATH)
         
 
     return {

@@ -41,8 +41,8 @@ export async function analyzeImageMetadata(tags: any){
 
     const matched = softwareKeywords.filter(k => rawJson.includes(k));
     if(matched.length > 0){
-        // const traceScore = Math.min(60, matched.length * 20)
-        score += 20;
+        const traceScore = Math.min(45, matched.length * 15);
+        score += traceScore;
         evidence.push(`Software traces detected: ${matched.join(", ")}`);
     }
 
@@ -69,7 +69,7 @@ export async function analyzeImageMetadata(tags: any){
     const hasIptc = !!tags?.iptc;
 
     if(!hasExif && !hasXmp && !hasIptc){
-        score += 50
+        score += 30
         evidence.push("Metadata appears stripped");
     }
 

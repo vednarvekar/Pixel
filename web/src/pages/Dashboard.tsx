@@ -10,8 +10,8 @@ import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify"; 
 import { Github, Linkedin, Twitter, Mail } from 'lucide-react';
 
-const API_BASE_URL = "http://localhost:3000";
-// const API_BASE_URL = "https://pixel-1-lwbp.onrender.com";
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:3000";
+const MAX_IMAGE_SIZE_BYTES = 5 * 1024 * 1024;
 
 
 type ScanState = "idle" | "preview" | "scanning" | "results";
@@ -45,6 +45,10 @@ const Dashboard = () => {
 
   const handleFile = useCallback((file: File) => {
     if (!file.type.startsWith("image/")) return;
+    if (file.size > MAX_IMAGE_SIZE_BYTES) {
+      toast.error("Image must be under 5MB");
+      return;
+    }
     setSelectedFile(file);
     setPreviewUrl(URL.createObjectURL(file));
     setScanState("preview");
@@ -75,7 +79,17 @@ const Dashboard = () => {
       });
 
       if (!response.ok) {
-        const errorMsg = await response.json();
+        let errorMsg = "System failure";
+        try {
+          const payload = await response.json();
+          if (typeof payload === "string") {
+            errorMsg = payload;
+          } else if (payload && typeof payload.message === "string") {
+            errorMsg = payload.message;
+          }
+        } catch {
+          // Keep fallback message
+        }
         throw new Error(errorMsg);
       }
 
@@ -84,10 +98,16 @@ const Dashboard = () => {
       setScanState("results");
       toast.success("Analysis successful!");
     } catch (error: any) {
-      toast.error("Server Error: Make sure backend is running on port 3000");
       setScanState("preview");
       console.error("DEBUG: Scan failed", error);
-      toast.error(`Error: ${error.message}`);
+      const msg = String(error?.message ?? "").toLowerCase();
+      if (msg.includes("under 5mb") || msg.includes("file too large")) {
+        toast.error("Image must be under 5MB");
+      } else if (msg.includes("failed to fetch")) {
+        toast.error("Server Error: Make sure backend is running on port 3000");
+      } else {
+        toast.error(`Error: ${error.message || "System failure"}`);
+      }
     }
   };
 
@@ -193,11 +213,13 @@ const Dashboard = () => {
               ) : (
                 <motion.div key="preview" className="relative p-6">
                   <button
+                    type="button"
+                    aria-label="Remove selected image"
                     onClick={(e) => {
                       e.stopPropagation();
                       handleReset();
                     }}
-                    className="absolute top-4 right-4 w-8 h-8 rounded-full bg-background/80 flex items-center justify-center"
+                    className="absolute top-4 right-4 z-20 w-8 h-8 rounded-full bg-background/80 flex items-center justify-center"
                   >
                     <X className="w-4 h-4" />
                   </button>

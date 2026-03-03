@@ -36,6 +36,13 @@ npm i
 npm run dev
 ```
 
+## Environment variables
+
+Create `web/.env` from `web/.env.example` and set:
+
+- `VITE_SUPABASE_URL`
+- `VITE_SUPABASE_PUBLISHABLE_KEY`
+
 **Edit a file directly in GitHub**
 
 - Navigate to the desired file(s).

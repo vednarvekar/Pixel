@@ -1,12 +1,9 @@
 import express,{type Request, type Response} from "express"
 import multer from "multer";
-import axios from "axios";
-import FormData from 'form-data';
 import { checkWebScore } from "../service/visualSearch.service.js";
 import { checkMetaData } from "../utils/metadata.extraction.js";
 import { fuseScores } from "../service/score.service.js";
-
-const PYTHON_API = "https://pixel-tlxy.onrender.com";
+import { predictWithPythonModel } from "../service/pythonModel.service.js";
 
 const router = express.Router();
 const upload = multer({
@@ -46,23 +43,12 @@ router.post("/scan", upload.single("image"), async(req: Request, res:Response) =
         const webScore = await checkWebScore(imageBuffer);
 
 
-        // ------------- 3. Bridge to model_route ---------------
-        const form = new FormData();
-        form.append("file", imageBuffer, {
-            filename: "upload.jpg", 
-            contentType: req.file.mimetype
-        });    
-
-        const response = await axios.post("http://127.0.0.1:8000/predict", form, {
-            headers: {...form.getHeaders()}
-        });
-        // const response = await axios.post(`${PYTHON_API}/predict`, form, {
-        //     headers: {...form.getHeaders()}
-        // })
+        // ------------- 3. Model inference via embedded Python process ---------------
+        const modelResponse = await predictWithPythonModel(imageBuffer, req.file.mimetype);
 
 
         // ------------- 4. Scoring ---------------
-        const modelScore = response.data.ai_score;
+        const modelScore = modelResponse.ai_score;
 
         const fusionResult = fuseScores({
             modelScore,
@@ -70,11 +56,12 @@ router.post("/scan", upload.single("image"), async(req: Request, res:Response) =
             webScore,
             override: metaScore.analysis.override
         })
-        console.log("MODEL RAW RESPONSE:", response.data);
+        console.log("MODEL RAW RESPONSE:", modelResponse);
         
         res.json({
           final_score: fusionResult.finalScore,
           verdict: fusionResult.verdict,
+          reasoning: fusionResult.reasoning,
           breakdown: {
             model: Math.round(modelScore),
             metadata: Math.round(metaScore.analysis.score),
@@ -84,6 +71,7 @@ router.post("/scan", upload.single("image"), async(req: Request, res:Response) =
 
 
     } catch (error) {
+        console.error("Scan failed:", error);
         res.status(500).json("System failure");
     }
 })
