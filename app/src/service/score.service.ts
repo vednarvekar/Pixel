@@ -16,8 +16,8 @@ export function fuseScores(input: FusionInput) {
     }
 
     // Weights are fine, but let's calculate a raw decimal first
-    let modelWeight = 0.55;
-    let metaWeight = 0.30;
+    let modelWeight = 0.65;
+    let metaWeight = 0.20;
     let webWeight = 0.15;
 
     const rawScore = (modelScore * modelWeight) + (metaScore * metaWeight) + (webScore * webWeight);
@@ -28,7 +28,8 @@ export function fuseScores(input: FusionInput) {
     // Better Verdicts: Map the numbers to human emotions
     let verdict = "Real Image"; // 0-20
     if (finalScore > 85) verdict = "High Probability AI";
-    else if (finalScore > 50) verdict = "Suspicious / Likely AI";
+    else if (finalScore > 70) verdict = "Likely AI";
+    else if (finalScore > 40) verdict = "Suspicious / Likely AI";
     else if (finalScore > 20) verdict = "Likely Real";
 
     return {

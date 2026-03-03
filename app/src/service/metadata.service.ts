@@ -69,7 +69,7 @@ export async function analyzeImageMetadata(tags: any){
     const hasIptc = !!tags?.iptc;
 
     if(!hasExif && !hasXmp && !hasIptc){
-        score += 30
+        score += 50
         evidence.push("Metadata appears stripped");
     }
 
