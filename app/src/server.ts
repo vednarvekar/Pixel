@@ -41,16 +41,20 @@ app.use((err: unknown, req: Request, res: Response, next: NextFunction) => {
 const serverStart = async() => {
     console.log("Server is starting.....")
 
-    await startEmbeddedPythonModel();
-    console.log("Python model process is ready.");
-
-    await preloadHashes(); 
-    console.log("Hashes preloaded! System is ready🔥.");
-
-    
     app.listen(PORT, () => {
-        console.log("🚀 TS Backend running on http://localhost:3000");
+        console.log(`🚀 TS Backend listening on port ${PORT}`);
     });
+
+    // Start heavy dependencies after binding port so platforms like Render can detect service health.
+    try {
+        await startEmbeddedPythonModel();
+        console.log("Python model process is ready.");
+
+        await preloadHashes();
+        console.log("Hashes preloaded! System is ready🔥.");
+    } catch (error) {
+        console.error("Startup dependency initialization failed:", error);
+    }
 }
 
 process.on("SIGINT", () => {

@@ -90,7 +90,8 @@ export async function startEmbeddedPythonModel(): Promise<void> {
       modelReadyPromise = null;
     });
 
-    await waitForHealth();
+    const timeoutMs = Number(process.env.PYTHON_HEALTH_TIMEOUT_MS || 120000);
+    await waitForHealth(Number.isFinite(timeoutMs) ? timeoutMs : 120000);
   })();
 
   return modelReadyPromise;

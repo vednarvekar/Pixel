@@ -104,7 +104,7 @@ const Dashboard = () => {
       if (msg.includes("under 5mb") || msg.includes("file too large")) {
         toast.error("Image must be under 5MB");
       } else if (msg.includes("failed to fetch")) {
-        toast.error("Server Error: Make sure backend is running on port 3000");
+        toast.error(`Server Error: Cannot reach API at ${API_BASE_URL}`);
       } else {
         toast.error(`Error: ${error.message || "System failure"}`);
       }
