@@ -1,6 +1,5 @@
 [build]
 builder = "NIXPACKS"
-buildCommand = "cd app && npm ci && virtualenv -p python3 .venv && .venv/bin/pip install -r requirements.txt"
 
 [deploy]
 startCommand = "cd app && PYTHON_BIN=.venv/bin/python npm run start"
