@@ -32,8 +32,11 @@ function resolvePythonBin(): string {
 
   const cwd = process.cwd();
   const candidates = [
+    path.resolve(cwd, ".venv/bin/python"),
     path.resolve(cwd, "venv/bin/python"),
+    path.resolve(cwd, "../.venv/bin/python"),
     path.resolve(cwd, "../venv/bin/python"),
+    path.resolve(cwd, "../../.venv/bin/python"),
     path.resolve(cwd, "../../venv/bin/python"),
   ];
 
