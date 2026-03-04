@@ -9,7 +9,7 @@ import { preloadHashes } from "./service/visualSearch.service.js"
 import { startEmbeddedPythonModel, stopEmbeddedPythonModel } from "./service/pythonModel.service.js";
 
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT ? Number(process.env.PORT) : 3000;
 
 app.use(cors({
     origin: "*",
@@ -18,6 +18,10 @@ app.use(cors({
     credentials: true
 }))
 app.use(express.json());
+
+app.get("/", (_req, res) => {
+  res.status(200).send("OK");
+});
 
 app.get("/health", (_req: Request, res: Response) => {
   res.status(200).json("OK");
