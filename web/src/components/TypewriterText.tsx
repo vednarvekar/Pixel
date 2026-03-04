@@ -29,7 +29,7 @@ const TypewriterText = ({ text, delay = 0, speed = 20 }: TypewriterTextProps) =>
   if (!started) return null;
 
   return (
-    <p className="text-sm text-muted-foreground leading-relaxed">
+    <p className="text-sm text-muted-foreground leading-relaxed whitespace-pre-line">
       {displayed}
       {displayed.length < text.length && (
         <span className="inline-block w-0.5 h-4 bg-primary ml-0.5 align-middle animate-blink" />

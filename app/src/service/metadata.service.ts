@@ -69,7 +69,7 @@ export async function analyzeImageMetadata(tags: any){
     const hasIptc = !!tags?.iptc;
 
     if(!hasExif && !hasXmp && !hasIptc){
-        score += 30
+        score += 50
         evidence.push("Metadata appears stripped");
     }
 
@@ -80,11 +80,5 @@ export async function analyzeImageMetadata(tags: any){
         score,
         override: false,
         evidence,
-        // confidence: 
-        //     score > 85
-        //         ? "High"
-        //         : score > 50
-        //         ? "Medium"
-        //         : "Low"
     };
 }

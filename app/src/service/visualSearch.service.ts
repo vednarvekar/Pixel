@@ -95,7 +95,7 @@ export async function checkWebScore(buffer: Buffer): Promise<number> {
     }
 
     if (minAi < minReal && minAi < 10) return 0.8;
-    if (minReal < minAi && minReal < 10) return 0.1;
+    if (minReal < minAi && minReal < 10) return 0.5;
 
     return 0.5;
 }
