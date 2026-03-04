@@ -13,15 +13,17 @@ let modelReadyPromise: Promise<void> | null = null;
 
 function resolveModelScriptPath(): string | null {
   const cwd = process.cwd();
+
   const candidates = [
-    path.resolve(cwd, "../resnet18/route/model_route.py"),
-    path.resolve(cwd, "../../resnet18/route/model_route.py"),
-    path.resolve(cwd, "resnet18/route/model_route.py"),
+    path.join(cwd, "resnet18", "route", "model_route.py"),
+    path.join(cwd, "./resnet18/route/model_route.py"),
   ];
 
   for (const candidate of candidates) {
     if (fs.existsSync(candidate)) return candidate;
   }
+
+  console.error("Model search failed. Checked paths:", candidates);
   return null;
 }
 
