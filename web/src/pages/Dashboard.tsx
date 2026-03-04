@@ -10,8 +10,8 @@ import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify"; 
 import { Github, Linkedin, Twitter, Mail } from 'lucide-react';
 
-// const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:3000";
-const API_BASE_URL =  "http://localhost:3000";
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:3000";
+// const API_BASE_URL =  "http://localhost:3000";
 const MAX_IMAGE_SIZE_BYTES = 5 * 1024 * 1024;
 
 
